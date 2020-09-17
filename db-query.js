@@ -98,6 +98,22 @@ async function createDepartment(deptObj){
   return await promise;
 }
 
+async function updateEmployeeRole(empID, newRoleID){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("UPDATE employee SET ? WHERE ?",
+    [
+      {role_id: newRoleID},
+      {id: empID}
+    ],
+    function(err){
+      if (err) throw err;
+      resolve()
+    })
+  })
+
+  return await promise;
+}
+
 exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
 exports.getDepartments = getDepartments;
