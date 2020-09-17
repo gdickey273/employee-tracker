@@ -10,11 +10,13 @@ function start() {
   inquirer.prompt({
     name: "todo",
     type: "list",
-    message: "What would you like to do?",
+    message: "What would you like to do? \n",
     choices: ["View Employees", "View Roles", "View Departments", "Create Employee", "Create Role", "Create Department", "Update an Employee's Role", "Quit"]
-  }).then(answer => {
+  }).then(async function(answer) {
     switch (answer.todo) {
       case "View Employees":
+        await query.tableLogEmployees();
+        start();
         break;
 
       case "View Roles":
