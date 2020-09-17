@@ -32,6 +32,8 @@ function start() {
         })
         break;
       case "View Roles":
+        await query.tableLogRoles();
+        start();
         break;
 
       case "View Departments":
