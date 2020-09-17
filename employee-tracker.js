@@ -1,23 +1,8 @@
-const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
-const { createPromptModule } = require("inquirer");
+const query = require("./db-query");
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "12345678",
-  database: "employee_tracker_db"
-});
 
-connection.connect(function(err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-    return;
-  }
-  console.log("connected as id " + connection.threadId);
-});
 
 function start() {
   inquirer.prompt({
@@ -45,7 +30,11 @@ function start() {
 }
 
 async function newEmployee() {
-  inquirer.prompt(
+  let employees = await query.getEmployees();
+  let roles = await query.getRoles();
+  console.log(employees);
+  console.log(roles);
+    inquirer.prompt(
     {
       name:"first_name",
       type: "input",
@@ -67,6 +56,12 @@ async function newEmployee() {
         }
         return false;
       }
+    },
+    {
+      name: "role_id",
+      type: "list",
+      message: "What is the employee's role?",
+
     }
 
   ).then(answers => {
