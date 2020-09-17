@@ -136,12 +136,27 @@ async function createDepartment(deptObj){
   return await promise;
 }
 
-async function updateEmployeeRole(empID, newRoleID){
+async function updateEmployee(employeeID, updateInfo){
   let promise = new Promise((resolve, reject) => {
     connection.query("UPDATE employee SET ? WHERE ?",
     [
-      {role_id: newRoleID},
-      {id: empID}
+      updateInfo,
+      employeeID
+    ],
+    function(err){
+      if (err) throw err;
+      resolve()
+    })
+  })
+
+  return await promise;
+}
+
+async function deleteEmployee(empID){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("DELETE FROM employee WHERE ?",
+    [
+      {id : empID}
     ],
     function(err){
       if (err) throw err;
@@ -163,6 +178,7 @@ exports.tableLogRoles = tableLogRoles;
 exports.createEmployee = createEmployee;
 exports.createRole = createRole;
 exports.createDepartment = createDepartment;
-exports.updateEmployeeRole = updateEmployeeRole;
+exports.updateEmployee = updateEmployee;
+exports.deleteEmployee = deleteEmployee;
 exports.endConnection = endConnection;
 
