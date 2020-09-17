@@ -38,6 +38,15 @@ async function getRoles(){
   return await promise;
 }
 
+async function getDepartments(){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM department", function(err, data){
+      if (err) throw err;
+      resolve(data);
+    });
+  });  
+  return await promise;
+}
 
 async function createEmployee(employeeOBJ){
   let promise = new Promise((resolve, reject) => {
@@ -57,6 +66,26 @@ async function createEmployee(employeeOBJ){
   return await promise;
 }
 
+async function createRole(roleObj){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("INSERT INTO role SET ?",
+    {
+      title : roleObj.title,
+      salary : roleObj.salary,
+      department_id : roleObj.department_id
+    },
+    function(err){
+      if (err) throw err;
+      resolve();
+    })
+  })
+
+  return await promise;
+}
+
 exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
+exports.getDepartments = getDepartments;
 exports.createEmployee = createEmployee;
+exports.createRole = createRole;
+

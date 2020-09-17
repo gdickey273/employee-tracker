@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 const query = require("./db-query");
+const { createPromptModule } = require("inquirer");
 
 
 
@@ -32,7 +33,7 @@ function start() {
 async function newEmployee() {
   let employees = await query.getEmployees();
   let employeeChoices = [];
-  for (let employee of employees){
+  for (let employee of employees) {
     employeeChoices.push(
       {
         name: `${employee.first_name} ${employee.last_name}`,
@@ -42,7 +43,7 @@ async function newEmployee() {
 
   let roles = await query.getRoles();
   let roleChoices = [];
-  for (let role of roles){
+  for (let role of roles) {
     roleChoices.push(
       {
         name: role.title,
@@ -50,26 +51,24 @@ async function newEmployee() {
       });
   }
 
-  // console.log(employees);
-  // console.log(roles);
-    inquirer.prompt(
+  inquirer.prompt(
     [{
-      name:"first_name",
+      name: "first_name",
       type: "input",
       message: "What is the employee's first name?",
-      validate: function(value){
-      if(!/[^a-z-\s]/.test(value.toLowerCase())){
-        return true;
+      validate: function (value) {
+        if (!/[^a-z-\s]/.test(value.toLowerCase())) {
+          return true;
+        }
+        return false;
       }
-      return false;
-    }
     },
     {
-      name:"last_name",
+      name: "last_name",
       type: "input",
       message: "What is the employee's last name?",
-      validate: function(value){
-        if(!/[^a-z-\s]/.test(value.toLowerCase())){
+      validate: function (value) {
+        if (!/[^a-z-\s]/.test(value.toLowerCase())) {
           return true;
         }
         return false;
@@ -82,22 +81,22 @@ async function newEmployee() {
       choices: roleChoices
     },
     {
-      name:"hasManager",
+      name: "hasManager",
       type: "confirm",
       message: "Does the employee have a manger?",
-      validate: function(value){
-        if(value.toLowerCase() === "y" || value.toLowerCase === "n"){
+      validate: function (value) {
+        if (value.toLowerCase() === "y" || value.toLowerCase === "n") {
           return true;
         }
         return false;
       }
     },
     {
-      name:"manager_id",
+      name: "manager_id",
       type: "list",
       message: "Who is the employee's manager?",
       choices: employeeChoices,
-      when: (answ) => {return answ.hasManager;}
+      when: (answ) => { return answ.hasManager; }
     }]
   ).then(async function (answers) {
     await query.createEmployee(answers);
@@ -105,6 +104,49 @@ async function newEmployee() {
     start();
   })
 }
+
+async function newRole() {
+  let departments = await query.getDepartments();
+  let departmentChoices = [];
+  for (let dept of departments) {
+    departmentChoices.push({
+      name: dept.name,
+      value: dept.id
+    });
+  }
+
+  inquirer.prompt(
+    [
+      {
+        name: "title",
+        type: "input",
+        message: "What is the title of the new role?"
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the role's annual salary?",
+        validate: function(value){
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        name: "department_id",
+        type: "list",
+        message: "To which department does this role belong?",
+        choices: departmentChoices
+      }
+    ]
+  ).then(async function(answers){
+    await query.createRole(answers);
+    console.table(await query.getRoles());
+    start();
+  })
+}
+
 
 
 start();
