@@ -11,9 +11,18 @@ function start() {
     name: "todo",
     type: "list",
     message: "What would you like to do?",
-    choices: ["Create Employee", "Create Role", "Create Department", "Update an Employee's Role"]
+    choices: ["View Employees", "View Roles", "View Departments", "Create Employee", "Create Role", "Create Department", "Update an Employee's Role", "Quit"]
   }).then(answer => {
     switch (answer.todo) {
+      case "View Employees":
+        break;
+
+      case "View Roles":
+        break;
+
+      case "View Departments":
+        break;
+
       case "Create Employee":
         newEmployee();
         break;
@@ -28,55 +37,18 @@ function start() {
       case "Update an Employee's Role":
         newEmployeeRole();
         break;
+      case "Quit":
+        query.endConnection();
+        break;
 
     }
   })
 }
 
-async function getEmployeeChoices(){
-  let employees = await query.getEmployees();
-  let employeeChoices = [];
-  for (let employee of employees) {
-    employeeChoices.push(
-      {
-        name: `${employee.first_name} ${employee.last_name}`,
-        value: employee.id
-      });
-  }
-
-  return employeeChoices;
-}
-
-async function getRoleChoices(){
-  let roles = await query.getRoles();
-  let roleChoices = [];
-  for (let role of roles) {
-    roleChoices.push(
-      {
-        name: role.title,
-        value: role.id
-      });
-  }
-
-  return roleChoices;
-}
-
-async function getDepartmentChoices(){
-  let departments = await query.getDepartments();
-  let departmentChoices = [];
-  for (let dept of departments) {
-    departmentChoices.push({
-      name: dept.name,
-      value: dept.id
-    });
-  }
-
-  return departmentChoices;
-}
 async function newEmployee() {
   let employeeChoices = await getEmployeeChoices();
   let roleChoices = await getRoleChoices();
- 
+
 
   inquirer.prompt(
     [{
@@ -146,7 +118,7 @@ async function newRole() {
         name: "salary",
         type: "input",
         message: "What is the role's annual salary?",
-        validate: function(value){
+        validate: function (value) {
           if (isNaN(value) === false) {
             return true;
           }
@@ -160,7 +132,7 @@ async function newRole() {
         choices: departmentChoices
       }
     ]
-  ).then(async function(answers){
+  ).then(async function (answers) {
     await query.createRole(answers);
     console.table(await query.getRoles());
     start();
@@ -176,14 +148,55 @@ async function newDepartment() {
         message: "What is the name of the new Department?"
       }
     ]
-  ).then (async function(answers){
+  ).then(async function (answers) {
     await query.createDepartment(answers);
     console.table(await query.getDepartments());
     start();
   })
 }
 
-async function newEmployeeRole(){
+async function getEmployeeChoices() {
+  let employees = await query.getEmployees();
+  let employeeChoices = [];
+  for (let employee of employees) {
+    employeeChoices.push(
+      {
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id
+      });
+  }
+
+  return employeeChoices;
+}
+
+async function getRoleChoices() {
+  let roles = await query.getRoles();
+  let roleChoices = [];
+  for (let role of roles) {
+    roleChoices.push(
+      {
+        name: role.title,
+        value: role.id
+      });
+  }
+
+  return roleChoices;
+}
+
+async function getDepartmentChoices() {
+  let departments = await query.getDepartments();
+  let departmentChoices = [];
+  for (let dept of departments) {
+    departmentChoices.push({
+      name: dept.name,
+      value: dept.id
+    });
+  }
+
+  return departmentChoices;
+}
+
+async function newEmployeeRole() {
   let employeeChoices = await getEmployeeChoices();
   let roleChoices = await getRoleChoices();
   inquirer.prompt(
@@ -201,11 +214,13 @@ async function newEmployeeRole(){
         choices: roleChoices
       }
     ]
-  ).then(async function(answers){
+  ).then(async function (answers) {
     await query.updateEmployeeRole(answers.employee_id, answers.role_id);
     console.table(await query.getEmployees());
     start();
   })
 }
+
+
 
 start();

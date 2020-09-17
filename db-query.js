@@ -114,6 +114,9 @@ async function updateEmployeeRole(empID, newRoleID){
   return await promise;
 }
 
+function endConnection(){
+  connection.end();
+}
 exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
 exports.getDepartments = getDepartments;
@@ -121,4 +124,5 @@ exports.createEmployee = createEmployee;
 exports.createRole = createRole;
 exports.createDepartment = createDepartment;
 exports.updateEmployeeRole = updateEmployeeRole;
+exports.endConnection = endConnection;
 
