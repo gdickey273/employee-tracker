@@ -22,7 +22,7 @@ function start() {
         break;
 
       case "Create Department":
-        newDeparment();
+        newDepartment();
         break;
 
 
@@ -147,6 +147,21 @@ async function newRole() {
   })
 }
 
+async function newDepartment() {
+  inquirer.prompt(
+    [
+      {
+        name: "name",
+        type: "input",
+        message: "What is the name of the new Department?"
+      }
+    ]
+  ).then (async function(answers){
+    await query.createDepartment(answers);
+    console.table(await query.getDepartments());
+    start();
+  })
+}
 
 
 start();
