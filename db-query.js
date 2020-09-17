@@ -120,4 +120,5 @@ exports.getDepartments = getDepartments;
 exports.createEmployee = createEmployee;
 exports.createRole = createRole;
 exports.createDepartment = createDepartment;
+exports.updateEmployeeRole = updateEmployeeRole;
 
