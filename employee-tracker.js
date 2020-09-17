@@ -99,8 +99,10 @@ async function newEmployee() {
       choices: employeeChoices,
       when: (answ) => {return answ.hasManager;}
     }]
-  ).then(answers => {
-    console.log(console.table(answers));
+  ).then(async function (answers) {
+    await query.createEmployee(answers);
+    console.table(await query.getEmployees());
+    start();
   })
 }
 

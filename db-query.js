@@ -38,5 +38,25 @@ async function getRoles(){
   return await promise;
 }
 
+
+async function createEmployee(employeeOBJ){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("INSERT INTO employee SET ?",
+    {
+      first_name : employeeOBJ.first_name,
+      last_name: employeeOBJ.last_name,
+      role_id : employeeOBJ.role_id,
+      manager_id : employeeOBJ.manager_id || -1
+    },
+    function(err){
+      if (err) throw err;
+      resolve();
+    })
+  })
+
+  return await promise;
+}
+
 exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
+exports.createEmployee = createEmployee;
