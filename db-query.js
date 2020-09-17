@@ -83,9 +83,25 @@ async function createRole(roleObj){
   return await promise;
 }
 
+async function createDepartment(deptObj){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("INSERT INTO department SET ?",
+    {
+      name: deptObj.name
+    },
+    function(err){
+      if (err) throw err;
+      resolve();
+    })
+  })
+
+  return await promise;
+}
+
 exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
 exports.getDepartments = getDepartments;
 exports.createEmployee = createEmployee;
 exports.createRole = createRole;
+exports.createDepartment = createDepartment;
 
