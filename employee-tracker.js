@@ -11,7 +11,10 @@ function start() {
     name: "todo",
     type: "list",
     message: "What would you like to do? \n",
-    choices: ["View Employees", "View Roles", "View Departments", "View Employees by Manager", "Create Employee", "Create Role", "Create Department", "Update an Employee's Role", "Quit"]
+    choices: ["View Employees", "View Roles", "View Departments", 
+    "View Employees by Manager", "Create Employee", "Create Role", 
+    "Create Department", "Update an Employee's Role", "Update an Employee's Manager", 
+    "Delete an Employee", "Quit"]
   }).then(async function(answer) {
     switch (answer.todo) {
       case "View Employees":
@@ -31,12 +34,15 @@ function start() {
           start();
         })
         break;
+
       case "View Roles":
         await query.tableLogRoles();
         start();
         break;
 
       case "View Departments":
+        console.table(await query.getDepartments());
+        start();
         break;
 
       case "Create Employee":
@@ -50,9 +56,27 @@ function start() {
       case "Create Department":
         newDepartment();
         break;
+
       case "Update an Employee's Role":
         newEmployeeRole();
         break;
+
+      case "Update an Employee's Manager":
+        newEmployeeManager();
+        break;
+
+      case "Delete an Employee":
+        let deleteEmployeeChoices = await getEmployeeChoices();
+        inquirer.prompt({
+          name: "id",
+          type: "list",
+          message: "Which employee would you like to delete?",
+          choices: deleteEmployeeChoices
+        }).then(async function(answers){
+          await query.deleteEmployee(answers.id);
+          start();
+        })
+        break;  
       case "Quit":
         query.endConnection();
         break;
@@ -231,10 +255,31 @@ async function newEmployeeRole() {
       }
     ]
   ).then(async function (answers) {
-    await query.updateEmployeeRole(answers.employee_id, answers.role_id);
+    await query.updateEmployee({id: answers.employee_id}, {role_id : answers.role_id});
     console.table(await query.getEmployees());
     start();
   })
+}
+
+async function newEmployeeManager(){
+  let employeeChoices = await getEmployeeChoices();
+        inquirer.prompt(
+          [{
+          name: "employee_id",
+          type: "list",
+          message: "Which employee would you like to update?",
+          choices: employeeChoices
+        },
+        {
+          name: "manager_id",
+          type: "list",
+          message: "Who is the employee's new manager?",
+          choices: employeeChoices
+        }]).then(async function(answers){
+          await query.updateEmployee({id: answers.employee_id}, {manager_id: answers.manager_id});
+          console.table(await query.tableLogEmployees())
+          start();
+        })
 }
 
 
