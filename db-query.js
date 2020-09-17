@@ -66,7 +66,11 @@ async function createEmployee(employeeOBJ){
   return await promise;
 }
 
-async function tableLogEmployees(){
+async function tableLogEmployees(manager_id){
+  let managerWhere = "";
+  if (manager_id){
+    managerWhere = `WHERE E1.manager_id = ${manager_id}`;
+  }
   let promise = new Promise((resolve, reject) => {
     connection.query(
       `SELECT E1.id AS id, E1.first_name AS first_name, E1.last_name AS last_name, role.title, E2.first_name AS manager_first_name, E2.last_name AS manager_last_name
@@ -75,6 +79,7 @@ async function tableLogEmployees(){
       ON E1.manager_id = E2.id
       LEFT JOIN role 
       ON E1.role_id = role.id
+      ${managerWhere}
       `,
       function(err, data){
         if (err) throw err;
