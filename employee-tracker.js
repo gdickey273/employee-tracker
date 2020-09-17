@@ -30,7 +30,7 @@ function start() {
   })
 }
 
-async function newEmployee() {
+async function getEmployeeChoices(){
   let employees = await query.getEmployees();
   let employeeChoices = [];
   for (let employee of employees) {
@@ -40,6 +40,24 @@ async function newEmployee() {
         value: employee.id
       });
   }
+
+  return employeeChoices;
+}
+
+async function getDepartmentChoices(){
+  let departments = await query.getDepartments();
+  let departmentChoices = [];
+  for (let dept of departments) {
+    departmentChoices.push({
+      name: dept.name,
+      value: dept.id
+    });
+  }
+
+  return departmentChoices;
+}
+async function newEmployee() {
+  let employeeChoices = await getEmployeeChoices();
 
   let roles = await query.getRoles();
   let roleChoices = [];
@@ -106,14 +124,7 @@ async function newEmployee() {
 }
 
 async function newRole() {
-  let departments = await query.getDepartments();
-  let departmentChoices = [];
-  for (let dept of departments) {
-    departmentChoices.push({
-      name: dept.name,
-      value: dept.id
-    });
-  }
+  let departmentChoices = await getDepartmentChoices();
 
   inquirer.prompt(
     [
@@ -163,5 +174,8 @@ async function newDepartment() {
   })
 }
 
+async function newEmployeeRole(){
+
+}
 
 start();
