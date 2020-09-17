@@ -86,7 +86,21 @@ async function tableLogEmployees(manager_id){
         resolve(data);
       })
   })
-  console.log("\n");
+  console.table(await promise);
+}
+
+async function tableLogRoles(){
+  let promise = new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT title, salary, name AS department
+      FROM role
+      LEFT JOIN department
+      ON role.department_id = department.id`,
+      function(err, data){
+        if (err) throw err;
+        resolve(data);
+      })
+  })
   console.table(await promise);
 }
 
@@ -145,6 +159,7 @@ exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
 exports.getDepartments = getDepartments;
 exports.tableLogEmployees = tableLogEmployees;
+exports.tableLogRoles = tableLogRoles;
 exports.createEmployee = createEmployee;
 exports.createRole = createRole;
 exports.createDepartment = createDepartment;
