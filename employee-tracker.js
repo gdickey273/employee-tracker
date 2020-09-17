@@ -11,7 +11,7 @@ function start() {
     name: "todo",
     type: "list",
     message: "What would you like to do? \n",
-    choices: ["View Employees", "View Roles", "View Departments", "Create Employee", "Create Role", "Create Department", "Update an Employee's Role", "Quit"]
+    choices: ["View Employees", "View Roles", "View Departments", "View Employees by Manager", "Create Employee", "Create Role", "Create Department", "Update an Employee's Role", "Quit"]
   }).then(async function(answer) {
     switch (answer.todo) {
       case "View Employees":
@@ -19,6 +19,18 @@ function start() {
         start();
         break;
 
+      case "View Employees by Manager":
+        let employeeChoices = await getEmployeeChoices();
+        inquirer.prompt({
+          name: "manager_id",
+          type: "list",
+          message: "Choose the manager who's employee list you'd like to see.",
+          choices: employeeChoices
+        }).then(async function(answers){
+          await query.tableLogEmployees(answers.manager_id);
+          start();
+        })
+        break;
       case "View Roles":
         break;
 
