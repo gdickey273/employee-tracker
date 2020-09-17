@@ -14,7 +14,8 @@ function start() {
     choices: ["View Employees", "View Roles", "View Departments", 
     "View Employees by Manager", "Create Employee", "Create Role", 
     "Create Department", "Update an Employee's Role", "Update an Employee's Manager", 
-    "Delete an Employee", "Quit"]
+    "Delete an Employee", "Delete a Role", "Delete a Department", 
+    "View total utilized budget of a Department", "Quit"]
   }).then(async function(answer) {
     switch (answer.todo) {
       case "View Employees":
@@ -76,7 +77,37 @@ function start() {
           await query.deleteEmployee(answers.id);
           start();
         })
-        break;  
+        break; 
+
+        case "Delete a Role":
+        let deleteRoleChoices = await getRoleChoices();
+        inquirer.prompt({
+          name: "id",
+          type: "list",
+          message: "Which Role would you like to delete?",
+          choices: deleteRoleChoices
+        }).then(async function(answers){
+          await query.deleteRole(answers.id);
+          start();
+        })
+        break;
+
+        case "Delete a Department":
+        let deleteDepartmentChoices = await getDepartmentChoices();
+        inquirer.prompt({
+          name: "id",
+          type: "list",
+          message: "Which Department would you like to delete?",
+          choices: deleteDepartmentChoices
+        }).then(async function(answers){
+          await query.deleteDepartment(answers.id);
+          start();
+        })
+        break; 
+
+        case "View total utilized budget of a Department":
+          await tableLogTotal();
+          break;
       case "Quit":
         query.endConnection();
         break;
@@ -282,6 +313,26 @@ async function newEmployeeManager(){
         })
 }
 
+async function tableLogTotal(){
+  let departmentChoices = await getDepartmentChoices();
+  inquirer.prompt({
+    name: "id",
+    type: "list",
+    message: "For which Department would you like to see the total utilized budget?",
+    choices: departmentChoices
+  }).then(async function(answers){
+    let employees = await query.getEmployeesByDepartment(answers.id);
 
+    let total = 0;
+    for(let emp of employees){
+      total += parseFloat(emp.salary);
+    }
+
+    total = total.toFixed(2);
+    console.table(employees);
+    console.log(`Total Budget Usage: $${total}`);
+    start();
+  })
+}
 
 start();

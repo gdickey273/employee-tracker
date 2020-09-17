@@ -28,6 +28,24 @@ async function getEmployees(){
     
 }
 
+async function getEmployeesByDepartment(deptID){
+  let promise = new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT first_name, last_name, role.title AS role, salary
+      FROM employee
+      LEFT JOIN role
+      ON employee.role_id = role.id
+      WHERE role.department_id = ${deptID}`,
+      function(err, data){
+        if (err) throw err;
+        resolve(data);
+      }
+    )
+  })
+
+  return await promise;
+}
+
 async function getRoles(){
   let promise = new Promise((resolve, reject) => {
     connection.query("SELECT * FROM role", function(err, data){
@@ -167,10 +185,41 @@ async function deleteEmployee(empID){
   return await promise;
 }
 
+async function deleteRole(roleID){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("DELETE FROM role WHERE ?",
+    [
+      {id : roleID}
+    ],
+    function(err){
+      if (err) throw err;
+      resolve()
+    })
+  })
+
+  return await promise;
+}
+
+async function deleteDepartment(deptID){
+  let promise = new Promise((resolve, reject) => {
+    connection.query("DELETE FROM department WHERE ?",
+    [
+      {id : deptID}
+    ],
+    function(err){
+      if (err) throw err;
+      resolve()
+    })
+  })
+
+  return await promise;
+}
+
 function endConnection(){
   connection.end();
 }
 exports.getEmployees = getEmployees;
+exports.getEmployeesByDepartment = getEmployeesByDepartment;
 exports.getRoles = getRoles;
 exports.getDepartments = getDepartments;
 exports.tableLogEmployees = tableLogEmployees;
@@ -180,5 +229,7 @@ exports.createRole = createRole;
 exports.createDepartment = createDepartment;
 exports.updateEmployee = updateEmployee;
 exports.deleteEmployee = deleteEmployee;
+exports.deleteRole = deleteRole;
+exports.deleteDepartment = deleteDepartment;
 exports.endConnection = endConnection;
 
