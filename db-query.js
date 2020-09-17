@@ -66,6 +66,25 @@ async function createEmployee(employeeOBJ){
   return await promise;
 }
 
+async function tableLogEmployees(){
+  let promise = new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT E1.id AS id, E1.first_name AS first_name, E1.last_name AS last_name, role.title, E2.first_name AS manager_first_name, E2.last_name AS manager_last_name
+      FROM employee E1
+      LEFT JOIN employee E2
+      ON E1.manager_id = E2.id
+      LEFT JOIN role 
+      ON E1.role_id = role.id
+      `,
+      function(err, data){
+        if (err) throw err;
+        resolve(data);
+      })
+  })
+  console.log("\n");
+  console.table(await promise);
+}
+
 async function createRole(roleObj){
   let promise = new Promise((resolve, reject) => {
     connection.query("INSERT INTO role SET ?",
@@ -120,6 +139,7 @@ function endConnection(){
 exports.getEmployees = getEmployees;
 exports.getRoles = getRoles;
 exports.getDepartments = getDepartments;
+exports.tableLogEmployees = tableLogEmployees;
 exports.createEmployee = createEmployee;
 exports.createRole = createRole;
 exports.createDepartment = createDepartment;
