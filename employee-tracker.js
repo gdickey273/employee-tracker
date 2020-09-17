@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 const query = require("./db-query");
 const { createPromptModule } = require("inquirer");
+const ExpandPrompt = require("inquirer/lib/prompts/expand");
 
 
 
@@ -10,7 +11,7 @@ function start() {
     name: "todo",
     type: "list",
     message: "What would you like to do?",
-    choices: ["Create Employee", "Create Role", "Create Department"]
+    choices: ["Create Employee", "Create Role", "Create Department", "Update an Employee's Role"]
   }).then(answer => {
     switch (answer.todo) {
       case "Create Employee":
@@ -24,7 +25,9 @@ function start() {
       case "Create Department":
         newDepartment();
         break;
-
+      case "Update an Employee's Role":
+        newEmployeeRole();
+        break;
 
     }
   })
@@ -44,6 +47,20 @@ async function getEmployeeChoices(){
   return employeeChoices;
 }
 
+async function getRoleChoices(){
+  let roles = await query.getRoles();
+  let roleChoices = [];
+  for (let role of roles) {
+    roleChoices.push(
+      {
+        name: role.title,
+        value: role.id
+      });
+  }
+
+  return roleChoices;
+}
+
 async function getDepartmentChoices(){
   let departments = await query.getDepartments();
   let departmentChoices = [];
@@ -58,16 +75,8 @@ async function getDepartmentChoices(){
 }
 async function newEmployee() {
   let employeeChoices = await getEmployeeChoices();
-
-  let roles = await query.getRoles();
-  let roleChoices = [];
-  for (let role of roles) {
-    roleChoices.push(
-      {
-        name: role.title,
-        value: role.id
-      });
-  }
+  let roleChoices = await getRoleChoices();
+ 
 
   inquirer.prompt(
     [{
@@ -175,7 +184,28 @@ async function newDepartment() {
 }
 
 async function newEmployeeRole(){
-
+  let employeeChoices = await getEmployeeChoices();
+  let roleChoices = await getRoleChoices();
+  inquirer.prompt(
+    [
+      {
+        name: "employee_id",
+        type: "list",
+        message: "Which employee's role would you like to update?",
+        choices: employeeChoices
+      },
+      {
+        name: "role_id",
+        type: "list",
+        message: "What is the employee's new role?",
+        choices: roleChoices
+      }
+    ]
+  ).then(async function(answers){
+    await query.updateEmployeeRole(answers.employee_id, answers.role_id);
+    console.table(await query.getEmployees());
+    start();
+  })
 }
 
 start();
