@@ -1,5 +1,7 @@
+//require mysql
 const mysql = require("mysql");
 
+//set up db connection
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -8,15 +10,15 @@ var connection = mysql.createConnection({
   database: "employee_tracker_db"
 });
 
+//start connection
 connection.connect(function(err) {
   if (err) {
     console.error("error connecting: " + err.stack);
     return;
   }
-  console.log("connected as id " + connection.threadId);
 });
 
-
+//A function to get all employees from employee table in employee_tracker_db
 async function getEmployees(){
   let promise = new Promise((resolve, reject) => {
     connection.query("SELECT * FROM employee", function(err, data){
@@ -28,6 +30,7 @@ async function getEmployees(){
     
 }
 
+//A function to get all employees from employee table with given department_id in employee_tracker_db
 async function getEmployeesByDepartment(deptID){
   let promise = new Promise((resolve, reject) => {
     connection.query(
@@ -46,6 +49,7 @@ async function getEmployeesByDepartment(deptID){
   return await promise;
 }
 
+//A function to get all roles from role table in employee_tracker_db
 async function getRoles(){
   let promise = new Promise((resolve, reject) => {
     connection.query("SELECT * FROM role", function(err, data){
@@ -56,6 +60,7 @@ async function getRoles(){
   return await promise;
 }
 
+//A function to get all departments from department table in employee_tracker_db
 async function getDepartments(){
   let promise = new Promise((resolve, reject) => {
     connection.query("SELECT * FROM department", function(err, data){
@@ -66,6 +71,7 @@ async function getDepartments(){
   return await promise;
 }
 
+//A function to insert new employee into employee table 
 async function createEmployee(employeeOBJ){
   let promise = new Promise((resolve, reject) => {
     connection.query("INSERT INTO employee SET ?",
@@ -84,6 +90,7 @@ async function createEmployee(employeeOBJ){
   return await promise;
 }
 
+//A function to table log each employee in employee table in a readable way for the user
 async function tableLogEmployees(manager_id){
   let managerWhere = "";
   if (manager_id){
@@ -107,6 +114,7 @@ async function tableLogEmployees(manager_id){
   console.table(await promise);
 }
 
+//A function to table log each role in role table in a readable way for the user
 async function tableLogRoles(){
   let promise = new Promise((resolve, reject) => {
     connection.query(
@@ -122,6 +130,7 @@ async function tableLogRoles(){
   console.table(await promise);
 }
 
+//A function to insert new role into role table 
 async function createRole(roleObj){
   let promise = new Promise((resolve, reject) => {
     connection.query("INSERT INTO role SET ?",
@@ -139,6 +148,7 @@ async function createRole(roleObj){
   return await promise;
 }
 
+//A function to insert new department into department table 
 async function createDepartment(deptObj){
   let promise = new Promise((resolve, reject) => {
     connection.query("INSERT INTO department SET ?",
@@ -154,6 +164,7 @@ async function createDepartment(deptObj){
   return await promise;
 }
 
+//A function that updates an employee with matching employeeID. updateInfo details the column that should be updated.
 async function updateEmployee(employeeID, updateInfo){
   let promise = new Promise((resolve, reject) => {
     connection.query("UPDATE employee SET ? WHERE ?",
@@ -170,6 +181,7 @@ async function updateEmployee(employeeID, updateInfo){
   return await promise;
 }
 
+//A function to delete an employee from employee table
 async function deleteEmployee(empID){
   let promise = new Promise((resolve, reject) => {
     connection.query("DELETE FROM employee WHERE ?",
@@ -185,6 +197,7 @@ async function deleteEmployee(empID){
   return await promise;
 }
 
+//A function to delete a role from role table
 async function deleteRole(roleID){
   let promise = new Promise((resolve, reject) => {
     connection.query("DELETE FROM role WHERE ?",
@@ -200,6 +213,7 @@ async function deleteRole(roleID){
   return await promise;
 }
 
+//A function to delete a deparment from deparment table
 async function deleteDepartment(deptID){
   let promise = new Promise((resolve, reject) => {
     connection.query("DELETE FROM department WHERE ?",
@@ -215,9 +229,12 @@ async function deleteDepartment(deptID){
   return await promise;
 }
 
+//A function to end the db connection
 function endConnection(){
   connection.end();
 }
+
+//Exporting all the above functions for use in other modules
 exports.getEmployees = getEmployees;
 exports.getEmployeesByDepartment = getEmployeesByDepartment;
 exports.getRoles = getRoles;
